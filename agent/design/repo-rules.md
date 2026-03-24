@@ -22,12 +22,24 @@ DisturbMyLive
 - Apply protection to administrators
 - Prefer squash merge only
 
-## Required status checks
+## Required fast lane checks
 
-- lint
-- build
-- test
+- verify
 - pr-body
+
+## Deep validation rule
+
+- system-validation exists for slower system-level validation
+- system-validation is not part of the default PR merge path unless the change risk requires it
+- user-visible changes still require documented manual verification in the PR
+
+## Verification law
+
+- Any code merged into main must pass fast lane automated verification
+- Any user-visible change must also be verified manually
+- High-risk changes should also run deep lane validation before merge
+- If automated verification is missing, the work is incomplete
+- If manual verification is missing for a user-visible change, the work is incomplete
 
 ## Pull request law
 
@@ -38,13 +50,6 @@ DisturbMyLive
 - The PR body must document exact automated verification run
 - The PR body must document exact manual verification performed
 - A PR without completed verification sections is not merge-ready
-
-## Verification law
-
-- Any code merged into main must be verified automatically
-- Any user-visible change must also be verified manually
-- If automated verification is missing, the work is incomplete
-- If manual verification is missing for a user-visible change, the work is incomplete
 
 ## Handoff rules
 

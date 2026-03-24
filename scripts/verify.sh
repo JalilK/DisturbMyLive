@@ -10,32 +10,32 @@ if ! command -v xcodegen >/dev/null 2>&1; then
   exit 1
 fi
 
-if [[ "$MODE" == "lint" || "$MODE" == "all" ]]; then
+run_lint() {
   if ! command -v swiftlint >/dev/null 2>&1; then
     echo "swiftlint is required for lint mode"
     exit 1
   fi
   swiftlint lint --strict
-fi
+}
 
-xcodegen generate
-xcodebuild -resolvePackageDependencies -project "$PROJECT" -scheme "$SCHEME"
-
-if [[ "$MODE" == "build" || "$MODE" == "test" || "$MODE" == "all" ]]; then
+run_build() {
+  xcodegen generate
+  xcodebuild -resolvePackageDependencies -project "$PROJECT" -scheme "$SCHEME"
   DESTINATION="$(python3 scripts/select_simulator.py)"
   echo "Using destination: $DESTINATION"
-fi
-
-if [[ "$MODE" == "build" || "$MODE" == "all" ]]; then
   xcodebuild \
     -project "$PROJECT" \
     -scheme "$SCHEME" \
     -destination "$DESTINATION" \
     -derivedDataPath DerivedData \
     clean build
-fi
+}
 
-if [[ "$MODE" == "test" || "$MODE" == "all" ]]; then
+run_test_fast() {
+  xcodegen generate
+  xcodebuild -resolvePackageDependencies -project "$PROJECT" -scheme "$SCHEME"
+  DESTINATION="$(python3 scripts/select_simulator.py)"
+  echo "Using destination: $DESTINATION"
   xcrun simctl boot "$(echo "$DESTINATION" | sed 's/platform=iOS Simulator,id=//')" || true
   xcrun simctl bootstatus "$(echo "$DESTINATION" | sed 's/platform=iOS Simulator,id=//')" -b
 
@@ -46,6 +46,26 @@ if [[ "$MODE" == "test" || "$MODE" == "all" ]]; then
     -derivedDataPath DerivedData \
     -parallel-testing-enabled NO \
     -maximum-parallel-testing-workers 1 \
-    -quiet \
     test
-fi
+}
+
+case "$MODE" in
+  lint)
+    run_lint
+    ;;
+  build)
+    run_build
+    ;;
+  test-fast)
+    run_test_fast
+    ;;
+  all)
+    run_lint
+    run_build
+    run_test_fast
+    ;;
+  *)
+    echo "Unknown mode: $MODE"
+    exit 1
+    ;;
+esac
