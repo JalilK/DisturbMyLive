@@ -1,14 +1,14 @@
-current_milestone: "Milestone 2"
-current_task: "Task 1 wire minimal app shell"
+current_milestone: "Milestone 3"
+current_task: "Task 1 replace mock connect with package integration"
 milestone_status:
   milestone_1_bootstrap: completed
-  milestone_2_app_shell: in_progress
-  milestone_3_live_connection: pending
+  milestone_2_app_shell: completed
+  milestone_3_live_connection: in_progress
   milestone_4_gift_catalog: pending
 task_status:
   milestone_1_task_1_create_repo_operating_system: completed
-  milestone_2_task_1_wire_minimal_app_shell: in_progress
-  milestone_3_task_1_replace_mock_connect_with_package_integration: pending
+  milestone_2_task_1_wire_minimal_app_shell: completed
+  milestone_3_task_1_replace_mock_connect_with_package_integration: in_progress
   milestone_4_task_1_build_gift_and_interaction_list_surface: pending
 started_at: "2026-03-24"
 completed_at: null
@@ -17,11 +17,13 @@ recent_work:
   - "Created ACP scaffold tailored to DisturbMyLive"
   - "Added XcodeGen project definition"
   - "Added minimal SwiftUI app shell"
+  - "Generated Xcode project"
+  - "Validated build and test surface for Milestone 2"
 next_steps:
-  - "Generate Xcode project"
-  - "Build app"
-  - "Confirm package resolution"
-  - "Advance to real stream connection integration"
+  - "Inspect SwiftUIEulerLiveKit public API"
+  - "Replace mock connection flow"
+  - "Map package failures to explicit UI state"
+  - "Route successful connection into catalog screen using real connection state"
 blockers: []
 documentation_counts:
   design_files: 5
@@ -29,4 +31,4 @@ documentation_counts:
   milestone_files: 4
   task_files: 4
 planning_progress: 0.55
-implementation_progress: 0.20
+implementation_progress: 0.35
