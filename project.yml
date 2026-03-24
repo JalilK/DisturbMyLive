@@ -7,13 +7,14 @@ configs:
   Debug: debug
   Release: release
 packages:
-  SwiftUIEulerLiveKit:
+  EulerLiveKit:
     url: https://github.com/JalilK/SwiftUIEulerLiveKit.git
     branch: main
 settings:
   base:
     SWIFT_VERSION: 5.10
     PRODUCT_NAME: DisturbMyLive
+
 targets:
   DisturbMyLive:
     type: application
@@ -34,7 +35,8 @@ targets:
         CODE_SIGN_STYLE: Automatic
         TARGETED_DEVICE_FAMILY: 1
     dependencies:
-      - package: SwiftUIEulerLiveKit
+      - package: EulerLiveKit
+        product: EulerLiveKit
 
   DisturbMyLiveTests:
     type: bundle.unit-test
@@ -42,5 +44,11 @@ targets:
     deploymentTarget: "17.0"
     sources:
       - path: Tests/DisturbMyLiveTests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: true
+        CODE_SIGN_STYLE: Automatic
+        TEST_HOST: ""
+        BUNDLE_LOADER: ""
     dependencies:
       - target: DisturbMyLive

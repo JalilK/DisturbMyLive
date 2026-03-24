@@ -4,7 +4,7 @@
 Milestone 2
 
 **Status**
-in_progress
+completed
 
 **Dependencies**
 Milestone 1 complete
@@ -39,7 +39,9 @@ Wire a minimal app shell that can generate into an Xcode project and present the
 
 cd ~/Desktop/DisturbMyLive
 xcodegen generate
-xcodebuild -project DisturbMyLive.xcodeproj -scheme DisturbMyLive -destination 'platform=iOS Simulator,name=iPhone 16' build
+xcodebuild -resolvePackageDependencies -project DisturbMyLive.xcodeproj -scheme DisturbMyLive
+xcodebuild -project DisturbMyLive.xcodeproj -scheme DisturbMyLive -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' build
+xcodebuild -project DisturbMyLive.xcodeproj -scheme DisturbMyLive -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' test
 
 ## Output
 

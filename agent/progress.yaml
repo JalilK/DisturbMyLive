@@ -17,6 +17,10 @@ recent_work:
   - "Created ACP scaffold tailored to DisturbMyLive"
   - "Added XcodeGen project definition"
   - "Added minimal SwiftUI app shell"
+  - "Created and pushed GitHub remote"
+  - "Resolved package dependency naming mismatch"
+  - "Fixed test target Info.plist generation"
+  - "Validated app shell against installed iPhone 15 simulator"
   - "Generated Xcode project"
   - "Validated build and test surface for Milestone 2"
 next_steps:
