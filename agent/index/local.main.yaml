@@ -1,0 +1,77 @@
+entries:
+  - path: AGENT.md
+    weight: 1.0
+    kind: operating-law
+    description: Repo level agent law and project summary
+    rationale: Highest priority execution rules
+    applies:
+      - init
+      - proceed
+      - status
+      - validate
+
+  - path: agent/design/requirements.md
+    weight: 1.0
+    kind: requirements
+    description: Product goal, constraints, and acceptance criteria
+    rationale: Primary source of project intent
+    applies:
+      - init
+      - proceed
+      - status
+      - validate
+
+  - path: agent/design/architecture.md
+    weight: 0.85
+    kind: architecture
+    description: System boundaries and integration shape
+    rationale: Prevents architecture drift
+    applies:
+      - init
+      - proceed
+      - validate
+
+  - path: agent/design/verification-strategy.md
+    weight: 0.85
+    kind: verification
+    description: Compile, test, and proof commands
+    rationale: Verification is mandatory before handoff
+    applies:
+      - proceed
+      - validate
+
+  - path: agent/design/repo-rules.md
+    weight: 0.95
+    kind: repo-rules
+    description: Local path, handoff law, and repo naming constraints
+    rationale: Enforces repo execution rules
+    applies:
+      - init
+      - proceed
+      - validate
+
+  - path: agent/design/source-of-truth-files.md
+    weight: 0.9
+    kind: source-map
+    description: Governing files and external truth sources
+    rationale: Prevents guessing
+    applies:
+      - init
+      - proceed
+
+  - path: project.yml
+    weight: 0.8
+    kind: build-config
+    description: XcodeGen project definition
+    rationale: Governs app generation and dependency hookup
+    applies:
+      - proceed
+      - validate
+
+  - path: README.md
+    weight: 0.6
+    kind: overview
+    description: Human readable project summary
+    rationale: Quick orientation
+    applies:
+      - init
