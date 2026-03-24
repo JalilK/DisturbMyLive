@@ -30,7 +30,7 @@ struct ConnectView: View {
 
                 switch viewModel.connectionState {
                 case .idle:
-                    Text("Backend token service: 127.0.0.1:8787")
+                    Text("Backend token service 127.0.0.1 on port 8787")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
 
