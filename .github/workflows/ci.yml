@@ -1,4 +1,4 @@
-name: ci
+name: verify
 
 on:
   pull_request:
@@ -6,36 +6,32 @@ on:
     branches:
       - main
 
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
-  lint:
-    name: lint
+  verify:
+    name: verify
     runs-on: macos-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+
       - name: Install tooling
         run: brew install xcodegen swiftlint
-      - name: Run lint
+
+      - name: Lint
         run: ./scripts/verify.sh lint
 
-  build:
-    name: build
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install tooling
-        run: brew install xcodegen
-      - name: Run build
+      - name: Build
         run: ./scripts/verify.sh build
 
-  test:
-    name: test
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install tooling
-        run: brew install xcodegen
-      - name: Run tests
-        run: ./scripts/verify.sh test
+      - name: Fast tests
+        run: ./scripts/verify.sh test-fast

@@ -23,3 +23,5 @@ This repo starts with
 - backend token flow stays outside the client
 - ACP files are first class source of truth
 - verification is required before handoff
+
+Repository policy verification branch.

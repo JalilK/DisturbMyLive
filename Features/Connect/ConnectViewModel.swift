@@ -1,6 +1,6 @@
+import EulerLiveKit
 import Foundation
 import Observation
-import EulerLiveKit
 
 @MainActor
 @Observable
