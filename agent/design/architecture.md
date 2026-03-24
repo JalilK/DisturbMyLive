@@ -1,54 +1,30 @@
-# DisturbMyLive Architecture
+# Architecture
 
 ## System boundaries
 
-The iOS app owns UI state, navigation, catalog presentation, and client side connection feedback.
-SwiftUIEulerLiveKit owns websocket transport, token service integration boundary, and typed event decoding.
-A backend token service will own short lived JWT issuance.
+DisturbMyLive is an iOS SwiftUI client application.
 
-## Module boundaries
+## Major layers
 
 - App
-  - app entry
-- Features/Connect
-  - username input
-  - connection attempt state
-  - connection failure display
-  - route to next screen on success
-- Features/GiftCatalog
-  - gift and interaction catalog presentation
-- Core/Models
-  - app domain models
-- Core/Services
-  - app level service protocols and state
-
-## Data flow
-
-User enters username.
-Connect feature starts connection request.
-Connection layer attempts stream connection through SwiftUIEulerLiveKit.
-Success updates app state and routes to catalog screen.
-Failure updates app state and presents an error.
+- Features
+- Core
+- Tests
+- ACP repo operating layer
 
 ## Integration points
 
-- SwiftUIEulerLiveKit package dependency
-- Future backend token endpoint
-- Future official gift metadata source
-- Future audio playback engine
-
-## Naming conventions
-
-- Human readable Swift names
-- Feature based folder structure
-- App facing wrappers around external transport layer
+- EulerLiveKit package
+- local token service during development
+- GitHub CI and PR enforcement
 
 ## State ownership
 
-ConnectViewModel owns connection state for bootstrap.
-GiftCatalogViewModel owns visible catalog bootstrap data.
+- app runtime state belongs in app code
+- repo workflow state belongs in ACP artifacts
+- merge and review policy belongs in GitHub and repo policy files
 
-## Error handling boundary
+## Error boundaries
 
-Connection errors must be surfaced as explicit UI state.
-Transport errors must not silently fail.
+- connection and backend failures must surface as user-visible failure state
+- repo workflow failures must surface through verify and PR gates

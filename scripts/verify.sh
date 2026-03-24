@@ -22,7 +22,7 @@ run_build() {
   xcodegen generate
   xcodebuild -resolvePackageDependencies -project "$PROJECT" -scheme "$SCHEME"
   DESTINATION="$(python3 scripts/select_simulator.py)"
-  echo "Using destination: $DESTINATION"
+  echo "Using destination $DESTINATION"
   xcodebuild \
     -project "$PROJECT" \
     -scheme "$SCHEME" \
@@ -35,9 +35,10 @@ run_test_fast() {
   xcodegen generate
   xcodebuild -resolvePackageDependencies -project "$PROJECT" -scheme "$SCHEME"
   DESTINATION="$(python3 scripts/select_simulator.py)"
-  echo "Using destination: $DESTINATION"
-  xcrun simctl boot "$(echo "$DESTINATION" | sed 's/platform=iOS Simulator,id=//')" || true
-  xcrun simctl bootstatus "$(echo "$DESTINATION" | sed 's/platform=iOS Simulator,id=//')" -b
+  echo "Using destination $DESTINATION"
+  SIM_ID="$(echo "$DESTINATION" | sed 's/platform=iOS Simulator,id=//')"
+  xcrun simctl boot "$SIM_ID" || true
+  xcrun simctl bootstatus "$SIM_ID" -b
 
   xcodebuild \
     -project "$PROJECT" \
@@ -47,6 +48,12 @@ run_test_fast() {
     -parallel-testing-enabled NO \
     -maximum-parallel-testing-workers 1 \
     test
+}
+
+run_verify() {
+  run_lint
+  run_build
+  run_test_fast
 }
 
 case "$MODE" in
@@ -59,13 +66,14 @@ case "$MODE" in
   test-fast)
     run_test_fast
     ;;
+  verify)
+    run_verify
+    ;;
   all)
-    run_lint
-    run_build
-    run_test_fast
+    run_verify
     ;;
   *)
-    echo "Unknown mode: $MODE"
+    echo "Unknown mode $MODE"
     exit 1
     ;;
 esac

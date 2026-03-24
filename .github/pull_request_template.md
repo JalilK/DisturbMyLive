@@ -4,11 +4,10 @@ Describe the actual repo surface that changed.
 
 ## Why this change exists
 
-Describe the user-facing or system-facing reason for the change.
+Describe the real reason for the change.
 
 ## Source of truth followed
 
-List the exact files and docs used.
 - AGENT.md
 - agent/design/requirements.md
 - agent/design/architecture.md
@@ -18,28 +17,19 @@ List the exact files and docs used.
 
 ## Automated verification
 
-List the exact commands you ran and the result.
-- [ ] ./scripts/verify.sh lint
-- [ ] ./scripts/verify.sh build
-- [ ] ./scripts/verify.sh test
+- [ ] `./scripts/verify.sh verify`
 
 ## Manual verification
 
-Describe every manual check actually performed.
-- [ ] Verified manually on simulator
-- [ ] Verified connect flow
-- [ ] Verified failure state
-- [ ] Verified success route
-- [ ] Verified no unrelated regressions
+- [ ] Verified manually on the primary path
+- [ ] Verified primary failure path
+- [ ] Verified no obvious adjacent regression
 
 ## Risks
 
-List the real risks, if any.
+Describe real risks if any.
 
 ## ACP updates
 
-Confirm the ACP system was updated to match reality.
-- [ ] progress.yaml updated
-- [ ] task status updated
-- [ ] verification docs updated if workflow changed
-- [ ] source-of-truth docs updated if architecture changed
+- [ ] `agent/progress.yaml` updated
+- [ ] ACP docs updated if repo reality changed

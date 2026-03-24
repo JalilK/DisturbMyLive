@@ -1,57 +1,37 @@
-# DisturbMyLive Requirements
+# Requirements
 
 ## Project goal
 
-Build a native iPhone app that connects to a TikTok LIVE stream and then shows a catalog of gift and interaction driven sounds.
+Build an iOS app called DisturbMyLive that connects to TikTok LIVE event streams through EulerLiveKit-backed infrastructure and maps gifts or interactions to user-visible sound-trigger behavior.
 
 ## User visible outcome
 
-The user can enter a TikTok username.
-The app attempts to connect.
-If connection fails the app shows a clear error state.
-If connection succeeds the app transitions to a catalog screen that lists official TikTok gift icons and interaction items with a description of the sound tied to each trigger.
+The user can enter a TikTok LIVE username, attempt connection, see failure if connection does not succeed, and navigate to a gift and interaction catalog view after successful connection.
 
 ## Explicit constraints
 
-- Native SwiftUI app
-- iOS 17 minimum
-- Use SwiftUIEulerLiveKit as the live event transport layer
-- Do not ship Euler credentials in the client
-- Assume backend issued token flow
-- Repo must use ACP artifacts as working memory
-- Delivery must remain full replacement friendly
-- Verification must be written before feature implementation expands
-
-## Repo names
-
-- App repo name is DisturbMyLive
-- Dependency repo is SwiftUIEulerLiveKit
-
-## Platform targets
-
-- iPhone
-- Portrait first UI
+- iOS 17 target
+- SwiftUI app
+- XcodeGen project
+- SwiftLint enforced
+- ACP-driven repo workflow
+- PR-gated main branch
+- fast-lane CI required before merge
 
 ## Acceptance criteria
 
-- Local repo can be generated and opened as an iOS project
-- ACP scaffold exists and reflects project specific rules
-- App has a connection entry screen
-- App has a post connect catalog screen
-- App state supports idle, connecting, connected, and failed
-- Verification files exist for future implementation
+- local ./scripts/verify.sh verify passes
+- CI verify and pr-body pass
+- ACP progress is recoverable by a fresh session
+- command-first repo workflow is active
 
-## Non goals for bootstrap
+## Non goals
 
-- Real token service implementation
-- Real gift icon ingestion
-- Real audio playback
-- Production styling
-- Creator configuration persistence
+- raw TikTok integration outside the Euler-backed flow
+- ad hoc untracked repo workflow
 
 ## Failure conditions
 
-- App ships secrets in client
-- Repo loses task continuity across sessions
-- Implementation proceeds without verification surface
-- Agent relies on chat memory over repo truth
+- code enters main without PR and verification
+- ACP state drifts from repo reality
+- command-first workflow is ignored for recurring repo operations
