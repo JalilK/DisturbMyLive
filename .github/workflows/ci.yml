@@ -1,0 +1,41 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: lint
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install tooling
+        run: brew install xcodegen swiftlint
+      - name: Run lint
+        run: ./scripts/verify.sh lint
+
+  build:
+    name: build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install tooling
+        run: brew install xcodegen
+      - name: Run build
+        run: ./scripts/verify.sh build
+
+  test:
+    name: test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install tooling
+        run: brew install xcodegen
+      - name: Run tests
+        run: ./scripts/verify.sh test

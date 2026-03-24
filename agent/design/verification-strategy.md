@@ -1,34 +1,41 @@
 # DisturbMyLive Verification Strategy
 
-## Compile checks
+## Automated verification surfaces
 
-- xcodegen generate
-- xcodebuild resolve package dependencies
-- xcodebuild build for simulator
+- SwiftLint
+- Package resolution
+- App build
+- Unit tests
+- PR body validation
 
-## Unit checks
+## Manual verification surfaces
 
-- xcodebuild test for DisturbMyLiveTests
+For every user-visible change
+- launch the app
+- verify the changed flow end to end
+- verify the primary success path
+- verify the primary failure path
+- verify no obvious unrelated regression in adjacent screens
 
-## File contract checks
-
-- ACP structure exists
-- required design files exist
-- index file exists
-- progress.yaml exists
-
-## Proof commands
+## Canonical verification commands
 
 cd ~/Desktop/DisturbMyLive
-xcodegen generate
-xcodebuild -resolvePackageDependencies -project DisturbMyLive.xcodeproj -scheme DisturbMyLive
-xcodebuild -project DisturbMyLive.xcodeproj -scheme DisturbMyLive -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' build
-xcodebuild -project DisturbMyLive.xcodeproj -scheme DisturbMyLive -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' test
+./scripts/verify.sh lint
+./scripts/verify.sh build
+./scripts/verify.sh test
+
+## Pull request verification rule
+
+A pull request is not ready until
+- automated checks are green
+- manual verification is documented in the PR body
+- ACP artifacts match the merged reality
 
 ## Expected validation artifacts
 
-- Generated Xcode project
-- Successful package resolution
-- Successful simulator build
-- Successful test run
-- Updated progress.yaml reflecting actual status
+- passing lint check
+- passing build check
+- passing test check
+- passing PR body check
+- updated progress.yaml
+- updated task file if status changed

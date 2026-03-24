@@ -68,6 +68,61 @@ entries:
       - proceed
       - validate
 
+
+  - path: .swiftlint.yml
+    weight: 0.9
+    kind: lint-config
+    description: Swift linting source of truth
+    rationale: Enforces style and consistency
+    applies:
+      - proceed
+      - validate
+
+  - path: .github/pull_request_template.md
+    weight: 0.95
+    kind: pr-template
+    description: Required PR body structure
+    rationale: Enforces review and verification discipline
+    applies:
+      - proceed
+      - validate
+
+  - path: .github/CODEOWNERS
+    weight: 0.85
+    kind: codeowners
+    description: Required reviewer ownership map
+    rationale: Supports required review enforcement
+    applies:
+      - proceed
+      - validate
+
+  - path: .github/workflows/ci.yml
+    weight: 0.95
+    kind: ci-workflow
+    description: Required CI checks for lint build and test
+    rationale: Main branch merge gate
+    applies:
+      - proceed
+      - validate
+
+  - path: .github/workflows/pr-body.yml
+    weight: 0.9
+    kind: pr-policy-workflow
+    description: Enforces required PR body sections
+    rationale: Prevents unverifiable PRs
+    applies:
+      - proceed
+      - validate
+
+  - path: scripts/verify.sh
+    weight: 0.95
+    kind: verification-script
+    description: Canonical local and CI verification entrypoint
+    rationale: One command surface for verification
+    applies:
+      - proceed
+      - validate
+
   - path: README.md
     weight: 0.6
     kind: overview
