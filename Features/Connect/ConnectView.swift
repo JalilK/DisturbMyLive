@@ -30,24 +30,42 @@ struct ConnectView: View {
 
                 switch viewModel.connectionState {
                 case .idle:
-                    EmptyView()
+                    Text("Backend token service: 127.0.0.1:8787")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
 
                 case .connecting(let username):
                     ProgressView("Connecting to \(username)")
 
                 case .connected(let username):
-                    NavigationLink("Open Gift Sounds") {
-                        GiftCatalogView(username: username)
-                    }
+                    Text("Connected to \(username)")
+                        .foregroundStyle(.green)
 
                 case .failed(_, let message):
                     Text(message)
                         .foregroundStyle(.red)
+                        .multilineTextAlignment(.center)
                 }
 
                 Spacer()
             }
             .padding()
+            .navigationDestination(
+                isPresented: Binding(
+                    get: { viewModel.connectedUsername != nil },
+                    set: { isPresented in
+                        if isPresented == false {
+                            viewModel.disconnectAndReset()
+                        }
+                    }
+                )
+            ) {
+                if let connectedUsername = viewModel.connectedUsername {
+                    GiftCatalogView(username: connectedUsername)
+                } else {
+                    EmptyView()
+                }
+            }
         }
     }
 }

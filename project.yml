@@ -13,7 +13,6 @@ packages:
 settings:
   base:
     SWIFT_VERSION: 5.10
-    PRODUCT_NAME: DisturbMyLive
 
 targets:
   DisturbMyLive:
@@ -29,6 +28,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.jalilkennedy.DisturbMyLive
+        PRODUCT_NAME: DisturbMyLive
+        PRODUCT_MODULE_NAME: DisturbMyLive
         INFOPLIST_FILE: App/Info.plist
         GENERATE_INFOPLIST_FILE: false
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -37,18 +38,23 @@ targets:
     dependencies:
       - package: EulerLiveKit
         product: EulerLiveKit
+    scheme:
+      testTargets:
+        - DisturbMyLiveTests
 
   DisturbMyLiveTests:
     type: bundle.unit-test
     platform: iOS
     deploymentTarget: "17.0"
+    hostApplication: DisturbMyLive
     sources:
       - path: Tests/DisturbMyLiveTests
     settings:
       base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jalilkennedy.DisturbMyLiveTests
+        PRODUCT_NAME: DisturbMyLiveTests
+        PRODUCT_MODULE_NAME: DisturbMyLiveTests
         GENERATE_INFOPLIST_FILE: true
         CODE_SIGN_STYLE: Automatic
-        TEST_HOST: ""
-        BUNDLE_LOADER: ""
     dependencies:
       - target: DisturbMyLive
