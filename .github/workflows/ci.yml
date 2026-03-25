@@ -21,5 +21,13 @@ jobs:
             brew install swiftlint
           fi
 
+      - name: Install XcodeGen
+        run: |
+          if command -v xcodegen >/dev/null 2>&1; then
+            echo "xcodegen already installed"
+          else
+            brew install xcodegen
+          fi
+
       - name: Verify
         run: ./scripts/verify.sh verify
