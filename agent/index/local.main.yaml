@@ -1,132 +1,77 @@
-entries:
+indexed_files:
   - path: AGENT.md
     weight: 1.0
-    kind: operating-law
-    description: Repo level agent law and project summary
-    rationale: Highest priority execution rules
+    kind: repo-law
+    description: Repo-wide agent operating rules
+    rationale: Highest priority rule source
     applies:
       - init
       - proceed
-      - status
       - validate
 
   - path: agent/design/requirements.md
     weight: 1.0
     kind: requirements
-    description: Product goal, constraints, and acceptance criteria
-    rationale: Primary source of project intent
+    description: Project requirements
+    rationale: Hard product and workflow constraints
     applies:
       - init
       - proceed
-      - status
       - validate
 
   - path: agent/design/architecture.md
-    weight: 0.85
+    weight: 0.9
     kind: architecture
-    description: System boundaries and integration shape
-    rationale: Prevents architecture drift
+    description: System architecture rules
+    rationale: Prevent architectural drift
     applies:
       - init
       - proceed
       - validate
 
   - path: agent/design/verification-strategy.md
-    weight: 0.85
+    weight: 1.0
     kind: verification
-    description: Compile, test, and proof commands
-    rationale: Verification is mandatory before handoff
+    description: Verification source of truth
+    rationale: Defines proof of completion
     applies:
       - proceed
       - validate
 
   - path: agent/design/repo-rules.md
-    weight: 0.95
+    weight: 1.0
     kind: repo-rules
-    description: Local path, handoff law, and repo naming constraints
-    rationale: Enforces repo execution rules
+    description: Repo workflow and merge law
+    rationale: Controls how code moves
     applies:
-      - init
       - proceed
       - validate
 
   - path: agent/design/source-of-truth-files.md
-    weight: 0.9
-    kind: source-map
-    description: Governing files and external truth sources
-    rationale: Prevents guessing
+    weight: 0.95
+    kind: truth-index
+    description: Governing files list
+    rationale: Tells the agent what governs reality
     applies:
       - init
       - proceed
-
-  - path: project.yml
-    weight: 0.8
-    kind: build-config
-    description: XcodeGen project definition
-    rationale: Governs app generation and dependency hookup
-    applies:
-      - proceed
       - validate
 
-
-  - path: .swiftlint.yml
-    weight: 0.9
-    kind: lint-config
-    description: Swift linting source of truth
-    rationale: Enforces style and consistency
-    applies:
-      - proceed
-      - validate
-
-  - path: .github/pull_request_template.md
-    weight: 0.95
-    kind: pr-template
-    description: Required PR body structure
-    rationale: Enforces review and verification discipline
-    applies:
-      - proceed
-      - validate
-
-  - path: .github/CODEOWNERS
-    weight: 0.85
-    kind: codeowners
-    description: Required reviewer ownership map
-    rationale: Supports required review enforcement
-    applies:
-      - proceed
-      - validate
-
-  - path: .github/workflows/ci.yml
-    weight: 0.95
-    kind: ci-workflow
-    description: Required CI checks for lint build and test
-    rationale: Main branch merge gate
-    applies:
-      - proceed
-      - validate
-
-  - path: .github/workflows/pr-body.yml
-    weight: 0.9
-    kind: pr-policy-workflow
-    description: Enforces required PR body sections
-    rationale: Prevents unverifiable PRs
-    applies:
-      - proceed
-      - validate
-
-  - path: scripts/verify.sh
-    weight: 0.95
-    kind: verification-script
-    description: Canonical local and CI verification entrypoint
-    rationale: One command surface for verification
-    applies:
-      - proceed
-      - validate
-
-  - path: README.md
-    weight: 0.6
-    kind: overview
-    description: Human readable project summary
-    rationale: Quick orientation
+  - path: agent/design/llm-terminal-execution-rules.md
+    weight: 1.0
+    kind: execution-law
+    description: Command-first terminal execution rules
+    rationale: Prevents drift into ad hoc shell
     applies:
       - init
+      - proceed
+      - validate
+
+  - path: agent/patterns/command-first-execution.md
+    weight: 0.95
+    kind: execution-pattern
+    description: Rule for deciding when to create or extend ACP commands
+    rationale: Moves repeated workflows into stable commands
+    applies:
+      - proceed
+      - validate

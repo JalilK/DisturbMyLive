@@ -1,26 +1,39 @@
-# DisturbMyLive Agent Operating Law
+# Repo Agent Rules
 
-This repo uses ACP as a repo level operating system for AI assisted coding.
+## Repo operating model
 
-The agent must treat ACP artifacts as first class source of truth.
-The agent must not begin implementation before design and verification surfaces exist.
-The agent must not guess repo facts when repo files can answer them.
-The agent must verify work before handoff.
-The agent must update ACP artifacts after meaningful progress.
+This repo uses ACP as a repo operating system.
 
-## Project summary
+The repo itself is the primary source of truth for
 
-DisturbMyLive is an iOS app that connects to TikTok LIVE streams through SwiftUIEulerLiveKit.
-The user enters a TikTok username.
-The app attempts to connect.
-The app shows an error when connection fails.
-On success the app routes to a screen that lists official TikTok gift icons and interaction entries with the sound each trigger maps to.
+- requirements
+- architecture
+- verification
+- repo policy
+- progress
+- next task
 
-## Delivery law
+## Terminal execution law
 
-- Prefer full file replacements
-- Prefer full repo replacements when structure changes broadly
-- No placeholder commands
-- No unverified handoff
-- No dead code paths without reason
-- Repo rules outrank chat memory
+This repo uses ACP as the preferred execution surface.
+
+Before emitting terminal code, first look for an ACP command that covers the task.
+
+If the task is a recurring repo workflow and no ACP command exists yet, create or extend the ACP command surface instead of repeating raw shell.
+
+Use raw shell only for one-off operations, deep debugging, or bootstrap steps below the ACP abstraction layer.
+
+## Fresh session law
+
+At the start of a fresh session, use these commands first
+
+- `./scripts/acp/acp.sh doctor`
+- `./scripts/acp/acp.sh init`
+- `./scripts/acp/acp.sh next`
+- `./scripts/acp/acp.sh context export init`
+
+Do not begin implementation before recovering current repo context.
+
+## Existing repo migration law
+
+When applying this ACP system to an existing repo, use the repo-os install command instead of manually copying files.

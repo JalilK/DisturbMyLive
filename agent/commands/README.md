@@ -1,46 +1,55 @@
-# DisturbMyLive Command Surface
+# Command Surface
 
-This repo uses ACP style command intent.
+## Local ACP entrypoint
 
-## Required execution loop
-
-1. Read agent/progress.yaml
-2. Read current task
-3. Read all indexed files whose applies surface matches the current command
-4. Execute bounded work only
-5. Run verification
-6. Update ACP artifacts
-7. Prepare pull request artifacts when the feature is complete
+- `./scripts/acp/acp.sh doctor`
+- `./scripts/acp/acp.sh init`
+- `./scripts/acp/acp.sh start <feature-name> [milestone] [task]`
+- `./scripts/acp/acp.sh status`
+- `./scripts/acp/acp.sh next`
+- `./scripts/acp/acp.sh context show [command]`
+- `./scripts/acp/acp.sh context export [command]`
+- `./scripts/acp/acp.sh verify`
+- `./scripts/acp/acp.sh pr body`
+- `./scripts/acp/acp.sh pr create`
+- `./scripts/acp/acp.sh progress show`
+- `./scripts/acp/acp.sh progress set-milestone <value>`
+- `./scripts/acp/acp.sh progress set-task <value>`
+- `./scripts/acp/acp.sh progress add-recent-work <value>`
+- `./scripts/acp/acp.sh progress add-next-step <value>`
+- `./scripts/acp/acp.sh progress add-blocker <value>`
+- `./scripts/acp/acp.sh progress clear-blockers`
+- `./scripts/acp/acp.sh progress mark-complete <status-key>`
+- `./scripts/acp/acp.sh progress mark-in-progress <status-key>`
+- `./scripts/acp/acp.sh complete`
+- `./scripts/acp/acp.sh command suggest "<task description>"`
 
 ## Command meanings
 
 @acp.init
 
-- read AGENT.md
-- read local.main.yaml
-- load highest priority indexed files
-- confirm current task from progress.yaml
+- validate ACP structure
+- load indexed repo context for a fresh session
+- show current progress state
 
 @acp.status
 
-- report milestone and task strictly from progress.yaml
-
-@acp.proceed
-
-- execute the current task only
-- do not skip verification
-- update progress on completion
+- report current progress state
 
 @acp.validate
 
-- run ./scripts/verify.sh lint
-- run ./scripts/verify.sh build
-- run ./scripts/verify.sh test
+- run local verification
 
 @acp.pr.prepare
 
-- generate a completed PR body from ACP artifacts
-- include exact source-of-truth files followed
-- include exact automated verification performed
-- include exact manual verification performed
-- do not mark a PR ready until ACP state matches reality
+- generate a completed PR body from ACP state
+
+## Enforcement rules
+
+- pre-push hook runs verification
+- `acp pr create` runs verification before PR creation
+- recurring repo workflows should become ACP commands
+- progress changes should use ACP progress commands instead of manual YAML edits when possible
+- `acp start` should update progress state automatically
+- `acp context export` should be used when an LLM needs a current context pack
+- `acp doctor` should pass before fresh-session implementation work

@@ -26,7 +26,6 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6
-
       - name: Validate PR body
         env:
           PR_BODY: ${{ github.event.pull_request.body }}

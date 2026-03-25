@@ -22,14 +22,8 @@ if missing:
         print(section)
     sys.exit(1)
 
-manual_markers = [
-    "- [x]",
-    "Verified manually",
-    "Manual verification completed",
-]
-
-if not any(marker in body for marker in manual_markers):
-    print("PR body must contain documented manual verification evidence")
+if "- [x]" not in body and "- [X]" not in body:
+    print("PR body must contain completed verification evidence")
     sys.exit(1)
 
 print("PR body validation passed")

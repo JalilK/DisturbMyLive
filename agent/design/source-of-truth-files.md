@@ -1,6 +1,4 @@
-# DisturbMyLive Source Of Truth Files
-
-## Repo local truth
+# Source Of Truth Files
 
 - AGENT.md
 - agent/design/requirements.md
@@ -8,19 +6,15 @@
 - agent/design/verification-strategy.md
 - agent/design/repo-rules.md
 - agent/design/source-of-truth-files.md
-- project.yml
-- .swiftlint.yml
+- agent/design/llm-terminal-execution-rules.md
+- agent/patterns/command-first-execution.md
+- agent/patterns/pr-driven-delivery.md
+- agent/index/local.main.yaml
 - .github/pull_request_template.md
 - .github/CODEOWNERS
 - .github/workflows/ci.yml
 - .github/workflows/pr-body.yml
 - scripts/verify.sh
-- scripts/select_simulator.py
-- scripts/check_pr_body.py
-- README.md
-
-## External truth
-
-- SwiftUIEulerLiveKit public source
-- GitHub protected branch and PR template rules
-- SwiftLint project documentation
+- scripts/acp/acp.sh
+- scripts/acp/update_progress.py
+- scripts/acp/context_tools.py
