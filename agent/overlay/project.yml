@@ -1,0 +1,42 @@
+name: DisturbMyLive
+options:
+  bundleIdPrefix: com.jalilkennedy
+  deploymentTarget:
+    iOS: "17.0"
+
+packages:
+  EulerLiveKit:
+    url: https://github.com/JalilK/SwiftUIEulerLiveKit.git
+    branch: main
+
+targets:
+  DisturbMyLive:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - App
+      - Core
+      - Features
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jalilkennedy.DisturbMyLive
+        INFOPLIST_FILE: App/Info.plist
+        SWIFT_VERSION: 5.0
+        GENERATE_INFOPLIST_FILE: NO
+    dependencies:
+      - package: EulerLiveKit
+
+  DisturbMyLiveTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Tests/DisturbMyLiveTests
+    dependencies:
+      - target: DisturbMyLive
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jalilkennedy.DisturbMyLiveTests
+        SWIFT_VERSION: 5.0
+        GENERATE_INFOPLIST_FILE: YES

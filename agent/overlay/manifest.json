@@ -1,0 +1,24 @@
+{
+  "preserve_files": [
+    "project.yml",
+    "App/Info.plist"
+  ],
+  "copy_files": [
+    {
+      "from": "agent/overlay/project.yml",
+      "to": "project.yml"
+    },
+    {
+      "from": "agent/overlay/App/Info.plist",
+      "to": "App/Info.plist"
+    }
+  ],
+  "required_package_names": [
+    "EulerLiveKit"
+  ],
+  "required_plist_keys": {
+    "App/Info.plist": [
+      "CFBundleIdentifier"
+    ]
+  }
+}
