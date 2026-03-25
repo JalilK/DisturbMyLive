@@ -4,7 +4,7 @@ import SwiftUI
 struct DisturbMyLiveApp: App {
     var body: some Scene {
         WindowGroup {
-            ConnectView()
+            Text("DisturbMyLive")
         }
     }
 }
