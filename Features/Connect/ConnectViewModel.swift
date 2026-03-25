@@ -11,6 +11,7 @@ final class ConnectViewModel {
 
     private let connectionService: LiveConnectionService
     private var attemptedUsername: String?
+    private var isUserInitiatedDisconnect = false
 
     init(connectionService: LiveConnectionService) {
         self.connectionService = connectionService
@@ -25,7 +26,16 @@ final class ConnectViewModel {
     }
 
     var canSubmit: Bool {
-        username.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+        guard username.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false else {
+            return false
+        }
+
+        switch connectionState {
+        case .idle, .failed:
+            return true
+        case .connecting, .connected, .disconnecting:
+            return false
+        }
     }
 
     func attemptConnection() async {
@@ -33,6 +43,7 @@ final class ConnectViewModel {
 
         guard cleanUsername.isEmpty == false else { return }
 
+        isUserInitiatedDisconnect = false
         attemptedUsername = cleanUsername
         connectedUsername = nil
         connectionState = .connecting(username: cleanUsername)
@@ -40,6 +51,7 @@ final class ConnectViewModel {
         do {
             try await connectionService.connect(to: cleanUsername)
         } catch {
+            connectedUsername = nil
             connectionState = .failed(
                 username: cleanUsername,
                 message: userFacingMessage(for: error)
@@ -48,14 +60,21 @@ final class ConnectViewModel {
     }
 
     func disconnectAndReset() {
+        let activeUsername = connectedUsername ?? attemptedUsername ?? normalizedUsername(from: username)
+
+        isUserInitiatedDisconnect = true
+        connectionState = .disconnecting(username: activeUsername)
+
         Task {
             await connectionService.disconnect()
             connectionService.clearHistory()
-        }
 
-        connectedUsername = nil
-        attemptedUsername = nil
-        connectionState = .idle
+            await MainActor.run {
+                self.connectedUsername = nil
+                self.attemptedUsername = nil
+                self.connectionState = .idle
+            }
+        }
     }
 
     private func handleConnectionStatus(_ status: EulerConnectionStatus) {
@@ -63,16 +82,20 @@ final class ConnectViewModel {
 
         switch status {
         case .idle:
-            connectionState = .idle
+            if isUserInitiatedDisconnect {
+                connectionState = .idle
+            }
 
         case .fetchingToken, .connecting:
             connectionState = .connecting(username: activeUsername)
 
         case .connected:
+            isUserInitiatedDisconnect = false
             connectedUsername = activeUsername
             connectionState = .connected(username: activeUsername)
 
         case .failed(let error):
+            isUserInitiatedDisconnect = false
             connectedUsername = nil
             connectionState = .failed(
                 username: activeUsername,
@@ -81,6 +104,13 @@ final class ConnectViewModel {
 
         case .disconnected(let reason):
             connectedUsername = nil
+
+            if isUserInitiatedDisconnect {
+                attemptedUsername = nil
+                connectionState = .idle
+                return
+            }
+
             connectionState = .failed(
                 username: activeUsername,
                 message: String(describing: reason)

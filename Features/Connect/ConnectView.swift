@@ -41,6 +41,9 @@ struct ConnectView: View {
                     Text("Connected to \(username)")
                         .foregroundStyle(.green)
 
+                case .disconnecting(let username):
+                    ProgressView("Disconnecting from \(username)")
+
                 case .failed(_, let message):
                     Text(message)
                         .foregroundStyle(.red)

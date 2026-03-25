@@ -1,5 +1,5 @@
-current_milestone: "Milestone 1"
-current_task: "Bootstrap repo operating system"
+current_milestone: "Milestone 3"
+current_task: "Harden live connection flow and disconnect behavior"
 milestone_status:
   milestone_1_bootstrap: in_progress
 task_status:
@@ -7,11 +7,23 @@ task_status:
 started_at: null
 completed_at: null
 recent_work:
-  - "Repo initialized from repo-os template"
+  - "Started feature branch for live-connection"
+  - "Started live connection feature branch from ACP"
+  - "Loaded current live connection files from repo source of truth"
+  - "Inspected current live connection implementation in service, view model, and connect view"
+  - "Updated connect flow files using heredoc file replacement"
 next_steps:
-  - "Fill in requirements"
-  - "Fill in architecture"
-  - "Configure stack-specific files"
+  - "Implement live-connection"
+  - "Run local verify"
+  - "Prepare PR from ACP state"
+  - "Implement connection flow using EulerLiveKit-backed service"
+  - "Handle connection failure state in UI"
+  - "Run local verify after connection flow changes"
+  - "Wire ConnectViewModel to LiveConnectionService success and failure states"
+  - "Navigate to GiftCatalogView only on successful connection"
+  - "Show connection failure clearly in ConnectView"
+  - "Make disconnect reset deterministic and avoid false failure state on intentional disconnect"
+  - "Disable connect button while connecting"
 blockers: []
 documentation_counts:
   design_files: 6
@@ -20,3 +32,4 @@ documentation_counts:
   task_files: 0
 planning_progress: 0.10
 implementation_progress: 0.10
+blockers: []
