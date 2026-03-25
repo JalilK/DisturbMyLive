@@ -1,59 +1,78 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-MODE="${1:-all}"
-PROJECT="DisturbMyLive.xcodeproj"
-SCHEME="DisturbMyLive"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
 
-if ! command -v xcodegen >/dev/null 2>&1; then
-  echo "xcodegen is required"
-  exit 1
-fi
+MODE="${1:-verify}"
+
+SIMULATOR_ID="${SIMULATOR_ID:-}"
+DERIVED_DATA_PATH="${DERIVED_DATA_PATH:-DerivedData}"
+PROJECT_NAME="${PROJECT_NAME:-DisturbMyLive}"
+SCHEME_NAME="${SCHEME_NAME:-DisturbMyLive}"
+
+find_simulator_id() {
+  xcrun simctl list devices available | grep "iPhone 15" | head -n 1 | sed -E 's/.*\(([A-F0-9-]+)\).*/\1/'
+}
+
+resolve_destination() {
+  local id="${SIMULATOR_ID}"
+  if [ -z "$id" ]; then
+    id="$(find_simulator_id)"
+  fi
+
+  if [ -z "$id" ]; then
+    echo "Could not find an available iPhone simulator"
+    exit 1
+  fi
+
+  echo "platform=iOS Simulator,id=${id}"
+}
 
 run_lint() {
   if ! command -v swiftlint >/dev/null 2>&1; then
     echo "swiftlint is required for lint mode"
     exit 1
   fi
+
+  echo "Linting Swift files in current working directory"
   swiftlint lint --strict
 }
 
 run_build() {
+  local destination
+  destination="$(resolve_destination)"
+
   xcodegen generate
-  xcodebuild -resolvePackageDependencies -project "$PROJECT" -scheme "$SCHEME"
-  DESTINATION="$(python3 scripts/select_simulator.py)"
-  echo "Using destination $DESTINATION"
+  xcodebuild -resolvePackageDependencies -project "${PROJECT_NAME}.xcodeproj" -scheme "${SCHEME_NAME}"
+  echo "Using destination ${destination}"
   xcodebuild \
-    -project "$PROJECT" \
-    -scheme "$SCHEME" \
-    -destination "$DESTINATION" \
-    -derivedDataPath DerivedData \
+    -project "${PROJECT_NAME}.xcodeproj" \
+    -scheme "${SCHEME_NAME}" \
+    -destination "${destination}" \
+    -derivedDataPath "${DERIVED_DATA_PATH}" \
     clean build
 }
 
-run_test_fast() {
-  xcodegen generate
-  xcodebuild -resolvePackageDependencies -project "$PROJECT" -scheme "$SCHEME"
-  DESTINATION="$(python3 scripts/select_simulator.py)"
-  echo "Using destination $DESTINATION"
-  SIM_ID="$(echo "$DESTINATION" | sed 's/platform=iOS Simulator,id=//')"
-  xcrun simctl boot "$SIM_ID" || true
-  xcrun simctl bootstatus "$SIM_ID" -b
+run_test() {
+  local destination
+  destination="$(resolve_destination)"
 
+  xcodegen generate
+  xcodebuild -resolvePackageDependencies -project "${PROJECT_NAME}.xcodeproj" -scheme "${SCHEME_NAME}"
+  echo "Using destination ${destination}"
   xcodebuild \
-    -project "$PROJECT" \
-    -scheme "$SCHEME" \
-    -destination "$DESTINATION" \
-    -derivedDataPath DerivedData \
-    -parallel-testing-enabled NO \
-    -maximum-parallel-testing-workers 1 \
+    -project "${PROJECT_NAME}.xcodeproj" \
+    -scheme "${SCHEME_NAME}" \
+    -destination "${destination}" \
+    -derivedDataPath "${DERIVED_DATA_PATH}" \
     test
 }
 
 run_verify() {
   run_lint
   run_build
-  run_test_fast
+  run_test
 }
 
 case "$MODE" in
@@ -63,17 +82,17 @@ case "$MODE" in
   build)
     run_build
     ;;
-  test-fast)
-    run_test_fast
+  test)
+    run_test
     ;;
   verify)
     run_verify
     ;;
-  all)
-    run_verify
+  test-fast)
+    run_test
     ;;
   *)
-    echo "Unknown mode $MODE"
+    echo "Unknown mode ${MODE}"
     exit 1
     ;;
 esac
