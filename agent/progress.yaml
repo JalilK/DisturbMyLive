@@ -1,7 +1,8 @@
 current_milestone: "Milestone 3"
 current_task: "Harden live connection flow and disconnect behavior"
 milestone_status:
-  milestone_1_bootstrap: in_progress
+  milestone_1_bootstrap: complete
+  milestone_1_task_1_bootstrap_repo: complete
 task_status:
   milestone_1_task_1_bootstrap_repo: in_progress
 started_at: null
@@ -12,6 +13,8 @@ recent_work:
   - "Loaded current live connection files from repo source of truth"
   - "Inspected current live connection implementation in service, view model, and connect view"
   - "Updated connect flow files using heredoc file replacement"
+  - "Completed hardened connection flow implementation and verification"
+  - "Added ACP status mutation commands for milestone and task completion"
 next_steps:
   - "Implement live-connection"
   - "Run local verify"
