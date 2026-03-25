@@ -2,9 +2,11 @@ import SwiftUI
 
 @main
 struct DisturbMyLiveApp: App {
+    private let service: LiveConnectionServiceProtocol = EulerLiveKitLiveConnectionService()
+
     var body: some Scene {
         WindowGroup {
-            Text("DisturbMyLive")
+            LiveConnectionRootView(service: service)
         }
     }
 }
