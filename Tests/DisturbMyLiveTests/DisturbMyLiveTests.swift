@@ -55,12 +55,29 @@ actor TestLiveConnectionService: LiveConnectionServiceProtocol {
     }
 }
 
+final class TestDisturbanceAudioService: DisturbanceAudioServiceProtocol {
+    private(set) var playedActions: [DisturbanceAction] = []
+    private(set) var stopCallCount: Int = 0
+
+    func play(action: DisturbanceAction) {
+        playedActions.append(action)
+    }
+
+    func stopAll() {
+        stopCallCount += 1
+    }
+}
+
 @MainActor
 struct DisturbMyLiveTests {
     @Test
     func connectMovesToConnectedState() async throws {
         let service = TestLiveConnectionService()
-        let viewModel = LiveConnectionViewModel(service: service)
+        let audioService = TestDisturbanceAudioService()
+        let viewModel = LiveConnectionViewModel(
+            service: service,
+            audioService: audioService
+        )
 
         viewModel.username = "jalil2567"
         viewModel.connect()
@@ -74,7 +91,11 @@ struct DisturbMyLiveTests {
     @Test
     func emptyUsernameFails() async throws {
         let service = TestLiveConnectionService()
-        let viewModel = LiveConnectionViewModel(service: service)
+        let audioService = TestDisturbanceAudioService()
+        let viewModel = LiveConnectionViewModel(
+            service: service,
+            audioService: audioService
+        )
 
         viewModel.username = "   "
         viewModel.connect()
@@ -86,5 +107,59 @@ struct DisturbMyLiveTests {
         } else {
             Issue.record("Expected failed state")
         }
+    }
+
+    @Test
+    func giftEventTriggersAudioAndUiLog() {
+        let service = TestLiveConnectionService()
+        let audioService = TestDisturbanceAudioService()
+        let viewModel = LiveConnectionViewModel(
+            service: service,
+            audioService: audioService
+        )
+
+        viewModel.process(
+            event: LiveEventEnvelope(
+                kind: .gift,
+                title: "Rose gift"
+            )
+        )
+
+        #expect(audioService.playedActions == [.airhorn])
+        #expect(viewModel.recentTriggers.first?.action == .airhorn)
+    }
+
+    @Test
+    func mutedGiftStillLogsButDoesNotPlayAudio() {
+        let service = TestLiveConnectionService()
+        let audioService = TestDisturbanceAudioService()
+        let viewModel = LiveConnectionViewModel(
+            service: service,
+            audioService: audioService
+        )
+
+        viewModel.isMuted = true
+        viewModel.process(
+            event: LiveEventEnvelope(
+                kind: .gift,
+                title: "Rose gift"
+            )
+        )
+
+        #expect(audioService.playedActions.isEmpty)
+        #expect(viewModel.recentTriggers.first?.action == .airhorn)
+    }
+
+    @Test
+    func likeThresholdTriggersOnlyAtConfiguredBoundary() {
+        var mapper = EventToDisturbanceMapper(likeThreshold: 3)
+
+        let first = mapper.map(event: LiveEventEnvelope(kind: .like, title: "like 1"))
+        let second = mapper.map(event: LiveEventEnvelope(kind: .like, title: "like 2"))
+        let third = mapper.map(event: LiveEventEnvelope(kind: .like, title: "like 3"))
+
+        #expect(first == nil)
+        #expect(second == nil)
+        #expect(third?.action == .likeMilestone)
     }
 }
