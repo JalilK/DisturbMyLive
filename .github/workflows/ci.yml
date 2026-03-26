@@ -26,6 +26,9 @@ jobs:
       - name: Install tooling
         run: echo "Install stack-specific tools here"
       - name: Install SwiftLint
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
         run: brew install swiftlint
 
       - name: Verify
