@@ -23,14 +23,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
-
-      - name: Install CI tools
-        run: brew install swiftlint xcodegen
-
-      - name: Verify pull request
-        if: github.event_name == 'pull_request'
-        run: ./scripts/verify.sh verify-pr
-
-      - name: Verify main
-        if: github.event_name == 'push'
+      - name: Install Homebrew tools
+        run: |
+          brew install xcodegen swiftlint
+      - name: Verify
         run: ./scripts/verify.sh verify

@@ -9,6 +9,35 @@ indexed_files:
       - proceed
       - validate
 
+  - path: README.md
+    weight: 0.95
+    kind: product-summary
+    description: High-level product summary and current repo scope
+    rationale: Fast grounding for fresh sessions
+    applies:
+      - init
+      - proceed
+
+  - path: project.yml
+    weight: 1.0
+    kind: project-config
+    description: XcodeGen project source of truth
+    rationale: Governs package wiring, targets, and source layout
+    applies:
+      - init
+      - proceed
+      - validate
+
+  - path: agent/progress.yaml
+    weight: 1.0
+    kind: progress
+    description: Current milestone, task, and next-step state
+    rationale: Controls what work is current
+    applies:
+      - init
+      - proceed
+      - validate
+
   - path: agent/design/requirements.md
     weight: 1.0
     kind: requirements
@@ -20,10 +49,10 @@ indexed_files:
       - validate
 
   - path: agent/design/architecture.md
-    weight: 0.9
+    weight: 1.0
     kind: architecture
     description: System architecture rules
-    rationale: Prevent architectural drift
+    rationale: Prevents architectural drift
     applies:
       - init
       - proceed
@@ -35,6 +64,7 @@ indexed_files:
     description: Verification source of truth
     rationale: Defines proof of completion
     applies:
+      - init
       - proceed
       - validate
 
@@ -44,6 +74,7 @@ indexed_files:
     description: Repo workflow and merge law
     rationale: Controls how code moves
     applies:
+      - init
       - proceed
       - validate
 
@@ -67,11 +98,85 @@ indexed_files:
       - proceed
       - validate
 
+  - path: agent/milestones/milestone-3-live-connection.md
+    weight: 0.95
+    kind: current-milestone
+    description: Current milestone target for real package-backed connection work
+    rationale: Guides the next implementation phase
+    applies:
+      - init
+      - proceed
+      - validate
+
+  - path: agent/tasks/milestone-3-live-connection/task-1-replace-mock-connect-with-package-integration.md
+    weight: 1.0
+    kind: current-task
+    description: Current task for replacing mock connect behavior with real integration
+    rationale: Directs the immediate next implementation step
+    applies:
+      - init
+      - proceed
+      - validate
+
   - path: agent/patterns/command-first-execution.md
     weight: 0.95
     kind: execution-pattern
     description: Rule for deciding when to create or extend ACP commands
     rationale: Moves repeated workflows into stable commands
+    applies:
+      - proceed
+      - validate
+
+  - path: agent/patterns/full-replacement-delivery.md
+    weight: 0.9
+    kind: delivery-pattern
+    description: Deliver full file replacements for structural changes
+    rationale: Keeps handoff deterministic
+    applies:
+      - proceed
+
+  - path: agent/patterns/index-every-critical-file.md
+    weight: 0.9
+    kind: indexing-pattern
+    description: Keep critical files indexed
+    rationale: Prevents blind spots in fresh sessions
+    applies:
+      - init
+      - proceed
+
+  - path: agent/patterns/no-guessing-repo-pattern.md
+    weight: 1.0
+    kind: no-guessing
+    description: Read repo truth before implementation
+    rationale: Prevents invented APIs and file paths
+    applies:
+      - init
+      - proceed
+      - validate
+
+  - path: agent/patterns/pr-driven-delivery.md
+    weight: 0.95
+    kind: delivery-pattern
+    description: PR-driven workflow rule
+    rationale: Keeps code movement reviewable and merge-safe
+    applies:
+      - proceed
+      - validate
+
+  - path: agent/patterns/single-operational-truth.md
+    weight: 0.95
+    kind: architecture-pattern
+    description: Keep one active implementation path
+    rationale: Prevents dead compatibility layers
+    applies:
+      - proceed
+      - validate
+
+  - path: agent/patterns/validation-first-development.md
+    weight: 1.0
+    kind: verification-pattern
+    description: Verification is part of implementation
+    rationale: A task is incomplete without proof
     applies:
       - proceed
       - validate
