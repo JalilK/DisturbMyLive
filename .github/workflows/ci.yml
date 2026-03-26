@@ -27,5 +27,10 @@ jobs:
       - name: Install CI tools
         run: brew install swiftlint xcodegen
 
-      - name: Verify
+      - name: Verify pull request
+        if: github.event_name == 'pull_request'
+        run: ./scripts/verify.sh verify-pr
+
+      - name: Verify main
+        if: github.event_name == 'push'
         run: ./scripts/verify.sh verify
