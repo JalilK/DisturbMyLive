@@ -24,6 +24,8 @@ targets:
         INFOPLIST_FILE: App/Info.plist
         SWIFT_VERSION: 5.0
         GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: Z33V6SVZNL
     dependencies:
       - package: EulerLiveKit
 

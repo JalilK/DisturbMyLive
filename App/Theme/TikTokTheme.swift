@@ -2,7 +2,10 @@ import SwiftUI
 
 enum TikTokTheme {
     enum Palette {
-        static let background = Color.black
+        static let backgroundBase = Color(red: 0.10, green: 0.05, blue: 0.10)
+        static let backgroundTop = Color(red: 0.22, green: 0.00, blue: 0.10)
+        static let backgroundBottom = Color(red: 0.04, green: 0.10, blue: 0.12)
+
         static let surface = Color.white.opacity(0.08)
         static let surfaceStrong = Color.white.opacity(0.14)
         static let border = Color.white.opacity(0.12)
@@ -18,7 +21,6 @@ enum TikTokTheme {
 
     enum Layout {
         static let screenHorizontalPadding: CGFloat = 16
-        static let screenTopPadding: CGFloat = 12
         static let cardCornerRadius: CGFloat = 18
         static let controlCornerRadius: CGFloat = 14
         static let compactSpacing: CGFloat = 10
@@ -29,37 +31,49 @@ enum TikTokTheme {
 struct TikTokBackgroundView: View {
     var body: some View {
         ZStack {
-            TikTokTheme.Palette.background
+            LinearGradient(
+                colors: [
+                    TikTokTheme.Palette.backgroundTop,
+                    TikTokTheme.Palette.backgroundBase,
+                    TikTokTheme.Palette.backgroundBottom
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
 
             RadialGradient(
                 colors: [
-                    TikTokTheme.Palette.accentPink.opacity(0.24),
+                    TikTokTheme.Palette.accentPink.opacity(0.30),
+                    TikTokTheme.Palette.accentPink.opacity(0.10),
                     .clear
                 ],
-                center: .topLeading,
-                startRadius: 10,
+                center: UnitPoint(x: 0.08, y: 0.12),
+                startRadius: 20,
                 endRadius: 420
             )
 
             RadialGradient(
                 colors: [
-                    TikTokTheme.Palette.accentCyan.opacity(0.18),
+                    TikTokTheme.Palette.accentCyan.opacity(0.24),
+                    TikTokTheme.Palette.accentCyan.opacity(0.08),
                     .clear
                 ],
-                center: .bottomTrailing,
-                startRadius: 10,
+                center: UnitPoint(x: 0.92, y: 0.88),
+                startRadius: 20,
                 endRadius: 420
             )
 
             LinearGradient(
                 colors: [
-                    .clear,
-                    Color.white.opacity(0.02)
+                    Color.white.opacity(0.03),
+                    Color.clear,
+                    Color.black.opacity(0.08)
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
     }
 }
@@ -169,6 +183,8 @@ struct TikTokToggleChip: View {
                 Text(title)
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(TikTokTheme.Palette.primaryText)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
 
                 Spacer(minLength: 0)
 

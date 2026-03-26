@@ -17,11 +17,19 @@ recent_work:
   - "CI verify workflow passed on pull request and main"
   - "Confirmed local repo is clean on main after merge"
   - "Filled project-specific ACP requirements, architecture, and verification docs"
+  - "Bridged EulerLiveClient event records into the app event stream"
+  - "Mapped real package event names into LiveEventEnvelope so disturbances can react to incoming live activity"
+  - "Bridged EulerLiveClient event records into the app event stream"
+  - "Mapped real package event names into LiveEventEnvelope so disturbances can react to incoming live activity"
 next_steps:
   - "Inspect EulerLiveKit APIs from repo truth"
   - "Replace mock connection flow with package-backed service"
   - "Map connection failures into explicit UI states"
   - "Route successful connection into the catalog screen"
+  - "Manually verify real incoming events populate the feed and trigger mapped sounds"
+  - "Prepare PR with manual proof for real event ingestion and disturbance triggering"
+  - "Manually verify real incoming events populate the feed and trigger mapped sounds"
+  - "Prepare PR with manual proof for real event ingestion and disturbance triggering"
 blockers: []
 documentation_counts:
   design_files: 6

@@ -6,6 +6,7 @@ final class LiveConnectionService {
     private let client: EulerLiveClient
 
     var onStatusChange: ((EulerConnectionStatus) -> Void)?
+    var onEventRecord: ((EulerDebugEventRecord) -> Void)?
 
     init(
         configuration: EulerLiveConfiguration = DisturbMyLiveBackendConfiguration.liveConfiguration,
@@ -20,6 +21,12 @@ final class LiveConnectionService {
         self.client.onStatusChange = { [weak self] status in
             Task { @MainActor in
                 self?.onStatusChange?(status)
+            }
+        }
+
+        self.client.onEventRecord = { [weak self] record in
+            Task { @MainActor in
+                self?.onEventRecord?(record)
             }
         }
     }

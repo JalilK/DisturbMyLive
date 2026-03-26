@@ -3,7 +3,7 @@ import Foundation
 
 enum DisturbMyLiveBackendConfiguration {
     static var backendBaseURL: URL {
-        guard let url = URL(string: "http://127.0.0.1:8787") else {
+        guard let url = URL(string: "https://euler-token-worker.swiftui-euler-api-key.workers.dev") else {
             preconditionFailure("Invalid backend base URL")
         }
         return url

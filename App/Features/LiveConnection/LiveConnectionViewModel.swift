@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(EulerLiveKit)
+import EulerLiveKit
+#endif
+
 @MainActor
 final class LiveConnectionViewModel: ObservableObject {
     @Published var username: String = ""
@@ -8,6 +12,7 @@ final class LiveConnectionViewModel: ObservableObject {
     @Published private(set) var connectionState: LiveConnectionState = .idle
     @Published private(set) var recentEvents: [LiveEventEnvelope] = []
     @Published private(set) var recentTriggers: [DisturbanceTrigger] = []
+    @Published private(set) var connectedUsername: String?
 
     private let service: LiveConnectionServiceProtocol
     private let audioService: DisturbanceAudioServiceProtocol
@@ -30,15 +35,25 @@ final class LiveConnectionViewModel: ObservableObject {
     }
 
     func connect() {
-        let requestedUsername = username.trimmingCharacters(in: .whitespacesAndNewlines)
+        let requestedUsername = normalizedUsername(from: username)
+
+        guard requestedUsername.isEmpty == false else {
+            connectedUsername = nil
+            connectionState = .failed(message: LiveConnectionServiceError.emptyUsername.localizedDescription)
+            return
+        }
+
         connectionState = .connecting(username: requestedUsername)
+        connectedUsername = nil
 
         Task {
             do {
                 try await service.connect(username: requestedUsername)
+                connectedUsername = requestedUsername
                 connectionState = .connected(username: requestedUsername)
             } catch {
-                connectionState = .failed(message: error.localizedDescription)
+                connectedUsername = nil
+                connectionState = .failed(message: userFacingMessage(for: error))
             }
         }
     }
@@ -47,6 +62,7 @@ final class LiveConnectionViewModel: ObservableObject {
         Task {
             await service.disconnect()
             audioService.stopAll()
+            connectedUsername = nil
             connectionState = .disconnected
         }
     }
@@ -57,35 +73,40 @@ final class LiveConnectionViewModel: ObservableObject {
             recentEvents = Array(recentEvents.prefix(25))
         }
 
-        guard disturbancesEnabled else {
-            return
-        }
-
-        guard let trigger = mapper.map(event: event) else {
-            return
-        }
+        guard disturbancesEnabled else { return }
+        guard let trigger = mapper.map(event: event) else { return }
 
         recentTriggers.insert(trigger, at: 0)
         if recentTriggers.count > 25 {
             recentTriggers = Array(recentTriggers.prefix(25))
         }
 
-        guard isMuted == false else {
-            return
-        }
-
+        guard isMuted == false else { return }
         audioService.play(action: trigger.action)
     }
 
     private func startObservingEvents() {
         eventTask = Task { [weak self] in
-            guard let self else {
-                return
-            }
-
+            guard let self else { return }
             for await event in service.events {
                 self.process(event: event)
             }
         }
+    }
+
+    private func normalizedUsername(from rawValue: String) -> String {
+        rawValue
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "@", with: "")
+    }
+
+    private func userFacingMessage(for error: Error) -> String {
+        #if canImport(EulerLiveKit)
+        if let liveError = error as? EulerLiveError {
+            return liveError.description
+        }
+        #endif
+
+        return String(describing: error)
     }
 }
