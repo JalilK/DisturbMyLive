@@ -25,5 +25,8 @@ jobs:
       - uses: actions/checkout@v6
       - name: Install tooling
         run: echo "Install stack-specific tools here"
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
       - name: Verify
         run: ./scripts/verify.sh verify
