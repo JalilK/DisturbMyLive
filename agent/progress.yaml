@@ -1,10 +1,11 @@
 current_milestone: "Milestone 4"
-current_task: "Design and implement splash screen"
+current_task: "Build gift and interaction list surface"
 milestone_status:
   milestone_1_bootstrap: complete
   milestone_2_app_shell: complete
   milestone_3_live_connection: complete
   milestone_4_gift_catalog: in_progress
+  milestone_4_task_2_design_and_implement_splash_screen: complete
 task_status:
   milestone_1_task_1_bootstrap_repo: complete
   milestone_2_task_1_wire_minimal_app_shell: complete
@@ -25,18 +26,9 @@ recent_work:
   - "Completed full-screen live connection UI fixes, restored full-screen gradient rendering, added launch screen configuration, and stabilized on-device safe-area layout"
   - "Designed and implemented branded splash screen with animated title lockup, Live interaction engine subtitle, accent glow dots, and timed handoff into the live connection screen"
 next_steps:
-  - "Inspect EulerLiveKit APIs from repo truth"
-  - "Replace mock connection flow with package-backed service"
-  - "Map connection failures into explicit UI states"
-  - "Route successful connection into the catalog screen"
-  - "Manually verify real incoming events populate the feed and trigger mapped sounds"
-  - "Prepare PR with manual proof for real event ingestion and disturbance triggering"
-  - "Manually verify real incoming events populate the feed and trigger mapped sounds"
-  - "Prepare PR with manual proof for real event ingestion and disturbance triggering"
-  - "Design and implement splash screen with full-screen gradient and animated brand entry"
-  - "Design aggressive TikTok-energy splash screen with Disturb My Live title lockup, Live interaction engine subtitle, animated glow accents, and timed transition into the live connection screen"
-  - "Implement SplashScreenView and wire timer-based transition into the live connection screen"
-  - "Open PR for splash screen work, validate CI, and merge after checks pass"
+  - "Define and implement the post-connect gift and interaction catalog surface"
+  - "Finalize catalog item grouping, icon treatment, and sound description presentation"
+  - "Open a new feature branch for gift catalog implementation"
 blockers: []
 documentation_counts:
   design_files: 6
