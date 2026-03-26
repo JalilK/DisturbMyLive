@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LiveConnectionRootView: View {
     @StateObject private var viewModel: LiveConnectionViewModel
+    @State private var isShowingCatalog = false
 
     init(service: LiveConnectionServiceProtocol) {
         _viewModel = StateObject(
@@ -10,32 +11,53 @@ struct LiveConnectionRootView: View {
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                TikTokBackgroundView()
+        NavigationStack {
+            GeometryReader { geometry in
+                ZStack(alignment: .top) {
+                    TikTokBackgroundView()
+                        .ignoresSafeArea()
 
-                VStack(spacing: TikTokTheme.Layout.regularSpacing) {
-                    topBar
-                        .frame(height: max(68, geometry.size.height * 0.10))
-
-                    connectionPanel
-                        .frame(height: max(192, geometry.size.height * 0.28))
-
-                    triggerPanel
-                        .frame(height: max(170, geometry.size.height * 0.25))
-
-                    eventsPanel
-                        .frame(maxHeight: .infinity)
+                    VStack(spacing: TikTokTheme.Layout.regularSpacing) {
+                        topBar
+                        connectionPanel
+                        triggerPanel
+                        eventsPanel
+                            .frame(maxHeight: .infinity)
+                    }
+                    .padding(.horizontal, TikTokTheme.Layout.screenHorizontalPadding)
+                    .padding(.top, geometry.safeAreaInsets.top + 24)
+                    .padding(.bottom, geometry.safeAreaInsets.bottom + 12)
+                    .frame(
+                        width: geometry.size.width,
+                        height: geometry.size.height,
+                        alignment: .top
+                    )
                 }
-                .padding(.horizontal, TikTokTheme.Layout.screenHorizontalPadding)
-                .padding(.top, TikTokTheme.Layout.screenTopPadding)
-                .padding(.bottom, 12)
+                .frame(
+                    width: geometry.size.width,
+                    height: geometry.size.height,
+                    alignment: .top
+                )
+            }
+            .toolbar(.hidden, for: .navigationBar)
+            .navigationBarBackButtonHidden(true)
+            .navigationDestination(isPresented: $isShowingCatalog) {
+                if let username = viewModel.connectedUsername {
+                    GiftCatalogView(username: username)
+                }
+            }
+            .onChange(of: viewModel.connectionState) { _, newValue in
+                if case .connected = newValue {
+                    isShowingCatalog = true
+                }
             }
         }
         .preferredColorScheme(.dark)
     }
+}
 
-    private var topBar: some View {
+private extension LiveConnectionRootView {
+    var topBar: some View {
         HStack(alignment: .center, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("DISTURB MY LIVE")
@@ -47,7 +69,7 @@ struct LiveConnectionRootView: View {
                 Text(stateText)
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(stateColor)
-                    .lineLimit(1)
+                    .lineLimit(2)
             }
 
             Spacer(minLength: 0)
@@ -62,69 +84,27 @@ struct LiveConnectionRootView: View {
                     .frame(width: 10, height: 10)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var connectionPanel: some View {
+    var connectionPanel: some View {
         TikTokPanel(
             title: "Live connection",
             subtitle: "Compact full-screen control surface"
         ) {
             VStack(spacing: 12) {
-                ZStack(alignment: .leading) {
-                    if viewModel.username.isEmpty {
-                        Text("@username")
-                            .foregroundStyle(TikTokTheme.Palette.tertiaryText)
-                            .padding(.horizontal, 14)
-                    }
+                usernameField
+                actionButtons
+                toggleRow
 
-                    TextField("", text: $viewModel.username)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                        .foregroundStyle(TikTokTheme.Palette.primaryText)
-                        .padding(.horizontal, 14)
-                }
-                .frame(height: 50)
-                .background(
-                    RoundedRectangle(cornerRadius: TikTokTheme.Layout.controlCornerRadius, style: .continuous)
-                        .fill(TikTokTheme.Palette.surfaceStrong)
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: TikTokTheme.Layout.controlCornerRadius, style: .continuous)
-                        .stroke(TikTokTheme.Palette.border, lineWidth: 1)
-                )
-
-                HStack(spacing: 10) {
-                    Button("Connect") {
-                        viewModel.connect()
-                    }
-                    .buttonStyle(TikTokPrimaryButtonStyle())
-
-                    Button("Disconnect") {
-                        viewModel.disconnect()
-                    }
-                    .buttonStyle(TikTokSecondaryButtonStyle())
-                }
-
-                HStack(spacing: 10) {
-                    TikTokToggleChip(
-                        title: "Disturbances",
-                        isOn: viewModel.disturbancesEnabled
-                    ) {
-                        viewModel.disturbancesEnabled.toggle()
-                    }
-
-                    TikTokToggleChip(
-                        title: "Mute",
-                        isOn: viewModel.isMuted
-                    ) {
-                        viewModel.isMuted.toggle()
-                    }
+                if case .failed(let message) = viewModel.connectionState {
+                    errorBanner(message)
                 }
             }
         }
     }
 
-    private var triggerPanel: some View {
+    var triggerPanel: some View {
         TikTokPanel(
             title: "Recent triggers",
             subtitle: "High-visibility reactions"
@@ -134,88 +114,156 @@ struct LiveConnectionRootView: View {
                     compactEmptyState("No trigger yet")
                 } else {
                     ForEach(triggerRows) { trigger in
-                        HStack(alignment: .top, spacing: 10) {
-                            RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                .fill(triggerAccent(for: trigger.action))
-                                .frame(width: 5)
-
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text(trigger.action.displayName.uppercased())
-                                    .font(.system(size: 13, weight: .heavy))
-                                    .foregroundStyle(TikTokTheme.Palette.primaryText)
-                                    .lineLimit(1)
-
-                                Text(trigger.message)
-                                    .font(.system(size: 12, weight: .medium))
-                                    .foregroundStyle(TikTokTheme.Palette.secondaryText)
-                                    .lineLimit(2)
-                            }
-
-                            Spacer(minLength: 0)
-                        }
-                        .padding(10)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .fill(TikTokTheme.Palette.surfaceStrong)
-                        )
+                        triggerRow(trigger)
                     }
                 }
             }
         }
     }
 
-    private var eventsPanel: some View {
+    var eventsPanel: some View {
         TikTokPanel(
             title: "Recent live events",
             subtitle: "Compact event feed"
         ) {
-            VStack(spacing: 8) {
+            Group {
                 if eventRows.isEmpty {
                     compactEmptyState("No event yet")
                 } else {
-                    ForEach(eventRows) { event in
-                        HStack(alignment: .center, spacing: 10) {
-                            Text(event.kind.rawValue.uppercased())
-                                .font(.system(size: 11, weight: .heavy))
-                                .foregroundStyle(TikTokTheme.Palette.primaryText)
-                                .lineLimit(1)
-                                .padding(.horizontal, 10)
-                                .frame(height: 28)
-                                .background(
-                                    Capsule()
-                                        .fill(TikTokTheme.Palette.surfaceStrong)
-                                )
-
-                            Text(event.title)
-                                .font(.system(size: 13, weight: .medium))
-                                .foregroundStyle(TikTokTheme.Palette.secondaryText)
-                                .lineLimit(2)
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 8) {
+                            ForEach(eventRows) { event in
+                                eventRow(event)
+                            }
                         }
-                        .padding(10)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .fill(TikTokTheme.Palette.surfaceStrong)
-                        )
+                        .frame(maxWidth: .infinity, alignment: .top)
                     }
                 }
-
-                Spacer(minLength: 0)
             }
-            .frame(maxHeight: .infinity, alignment: .top)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
     }
 
-    private var triggerRows: ArraySlice<DisturbanceTrigger> {
+    var usernameField: some View {
+        ZStack(alignment: .leading) {
+            if viewModel.username.isEmpty {
+                Text("@username")
+                    .foregroundStyle(TikTokTheme.Palette.tertiaryText)
+                    .padding(.horizontal, 14)
+            }
+
+            TextField("", text: $viewModel.username)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .foregroundStyle(TikTokTheme.Palette.primaryText)
+                .padding(.horizontal, 14)
+        }
+        .frame(height: 50)
+        .background(
+            RoundedRectangle(cornerRadius: TikTokTheme.Layout.controlCornerRadius, style: .continuous)
+                .fill(TikTokTheme.Palette.surfaceStrong)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: TikTokTheme.Layout.controlCornerRadius, style: .continuous)
+                .stroke(TikTokTheme.Palette.border, lineWidth: 1)
+        )
+    }
+
+    var actionButtons: some View {
+        HStack(spacing: 10) {
+            Button("Connect") {
+                viewModel.connect()
+            }
+            .buttonStyle(TikTokPrimaryButtonStyle())
+
+            Button("Disconnect") {
+                viewModel.disconnect()
+            }
+            .buttonStyle(TikTokSecondaryButtonStyle())
+        }
+    }
+
+    var toggleRow: some View {
+        HStack(spacing: 10) {
+            TikTokToggleChip(
+                title: "Disturbances",
+                isOn: viewModel.disturbancesEnabled
+            ) {
+                viewModel.disturbancesEnabled.toggle()
+            }
+
+            TikTokToggleChip(
+                title: "Mute",
+                isOn: viewModel.isMuted
+            ) {
+                viewModel.isMuted.toggle()
+            }
+        }
+    }
+
+    func triggerRow(_ trigger: DisturbanceTrigger) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                .fill(triggerAccent(for: trigger.action))
+                .frame(width: 5)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(trigger.action.displayName.uppercased())
+                    .font(.system(size: 13, weight: .heavy))
+                    .foregroundStyle(TikTokTheme.Palette.primaryText)
+                    .lineLimit(1)
+
+                Text(trigger.message)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(TikTokTheme.Palette.secondaryText)
+                    .lineLimit(2)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(TikTokTheme.Palette.surfaceStrong)
+        )
+    }
+
+    func eventRow(_ event: LiveEventEnvelope) -> some View {
+        HStack(alignment: .center, spacing: 10) {
+            Text(event.kind.rawValue.uppercased())
+                .font(.system(size: 11, weight: .heavy))
+                .foregroundStyle(TikTokTheme.Palette.primaryText)
+                .lineLimit(1)
+                .padding(.horizontal, 10)
+                .frame(height: 28)
+                .background(
+                    Capsule()
+                        .fill(TikTokTheme.Palette.surfaceStrong)
+                )
+
+            Text(event.title)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(TikTokTheme.Palette.secondaryText)
+                .lineLimit(3)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(TikTokTheme.Palette.surfaceStrong)
+        )
+    }
+
+    var triggerRows: ArraySlice<DisturbanceTrigger> {
         viewModel.recentTriggers.prefix(3)
     }
 
-    private var eventRows: ArraySlice<LiveEventEnvelope> {
-        viewModel.recentEvents.prefix(4)
+    var eventRows: ArraySlice<LiveEventEnvelope> {
+        viewModel.recentEvents.prefix(25)
     }
 
     @ViewBuilder
-    private func compactEmptyState(_ text: String) -> some View {
+    func compactEmptyState(_ text: String) -> some View {
         RoundedRectangle(cornerRadius: 12, style: .continuous)
             .fill(TikTokTheme.Palette.surfaceStrong)
             .frame(maxWidth: .infinity)
@@ -227,7 +275,31 @@ struct LiveConnectionRootView: View {
             )
     }
 
-    private func triggerAccent(for action: DisturbanceAction) -> Color {
+    @ViewBuilder
+    func errorBanner(_ message: String) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Circle()
+                .fill(TikTokTheme.Palette.danger)
+                .frame(width: 10, height: 10)
+                .padding(.top, 4)
+
+            Text(message)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(TikTokTheme.Palette.primaryText)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(TikTokTheme.Palette.surfaceStrong)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(TikTokTheme.Palette.danger.opacity(0.45), lineWidth: 1)
+        )
+    }
+
+    func triggerAccent(for action: DisturbanceAction) -> Color {
         switch action {
         case .airhorn:
             return TikTokTheme.Palette.accentPink
@@ -238,7 +310,7 @@ struct LiveConnectionRootView: View {
         }
     }
 
-    private var stateText: String {
+    var stateText: String {
         switch viewModel.connectionState {
         case .idle:
             return "Idle"
@@ -253,7 +325,7 @@ struct LiveConnectionRootView: View {
         }
     }
 
-    private var stateColor: Color {
+    var stateColor: Color {
         switch viewModel.connectionState {
         case .idle, .disconnected:
             return TikTokTheme.Palette.secondaryText
