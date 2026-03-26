@@ -2,6 +2,7 @@
 set -euo pipefail
 
 MODE="${1:-}"
+SIMULATOR_ID="2A706B68-0FFD-4C46-816F-2482EEB01E45"
 
 need_cmd() {
   local cmd="$1"
@@ -37,7 +38,7 @@ run_build() {
   xcodebuild \
     -project DisturbMyLive.xcodeproj \
     -scheme DisturbMyLive \
-    -destination "platform=iOS Simulator,name=iPhone 15 Pro" \
+    -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" \
     -derivedDataPath DerivedData \
     build
 }
@@ -45,11 +46,11 @@ run_build() {
 run_clean_test() {
   rm -rf DerivedData
   xcrun simctl shutdown all || true
-  xcrun simctl erase all || true
+  xcrun simctl boot "${SIMULATOR_ID}" || true
   xcodebuild \
     -project DisturbMyLive.xcodeproj \
     -scheme DisturbMyLive \
-    -destination "platform=iOS Simulator,name=iPhone 15 Pro" \
+    -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" \
     -derivedDataPath DerivedData \
     clean test
 }
