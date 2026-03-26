@@ -23,13 +23,15 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
+
       - name: Install tooling
         run: echo "Install stack-specific tools here"
+
       - name: Install SwiftLint
+        run: brew install swiftlint
+
       - name: Install XcodeGen
         run: brew install xcodegen
-
-        run: brew install swiftlint
 
       - name: Verify
         run: ./scripts/verify.sh verify
