@@ -1,152 +1,148 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$ROOT"
-
-MODE="${1:-verify}"
-
-SIMULATOR_ID="${SIMULATOR_ID:-}"
-DERIVED_DATA_PATH="${DERIVED_DATA_PATH:-DerivedData}"
-PROJECT_NAME="${PROJECT_NAME:-DisturbMyLive}"
-SCHEME_NAME="${SCHEME_NAME:-DisturbMyLive}"
+MODE="${1:-}"
 
 need_cmd() {
   local cmd="$1"
-
-  if command -v "$cmd" >/dev/null 2>&1; then
-    return 0
-  fi
-
-  echo "$cmd is required for $MODE mode" >&2
-
-  if [ "${CI:-}" = "true" ]; then
-    case "$cmd" in
-      swiftlint)
-        echo "CI bootstrap hint install SwiftLint before running ./scripts/verify.sh $MODE" >&2
-        echo "Example for GitHub Actions" >&2
-        echo "  - name Install SwiftLint" >&2
-        echo "    run brew install swiftlint" >&2
-        ;;
-      xcodegen)
-        echo "CI bootstrap hint install XcodeGen before running ./scripts/verify.sh $MODE" >&2
-        echo "Example for GitHub Actions" >&2
-        echo "  - name Install XcodeGen" >&2
-        echo "    run brew install xcodegen" >&2
-        ;;
-      *)
-        echo "CI bootstrap hint install $cmd in the workflow before running verify" >&2
-        ;;
-    esac
-  else
-    case "$cmd" in
-      swiftlint)
-        echo "Local bootstrap hint install SwiftLint with Homebrew" >&2
-        echo "  brew install swiftlint" >&2
-        ;;
-      xcodegen)
-        echo "Local bootstrap hint install XcodeGen with Homebrew" >&2
-        echo "  brew install xcodegen" >&2
-        ;;
-      *)
-        echo "Local bootstrap hint install $cmd and retry" >&2
-        ;;
-    esac
-  fi
-
-  exit 1
-}
-
-find_simulator_id() {
-  xcrun simctl list devices available | awk '
-    /iPhone/ && /Shutdown|Booted/ {
-      if (match($0, /\(([A-F0-9-]+)\)/)) {
-        print substr($0, RSTART + 1, RLENGTH - 2)
-        exit
-      }
-    }
-  '
-}
-
-resolve_destination() {
-  local id="${SIMULATOR_ID}"
-
-  if [ -z "$id" ]; then
-    id="$(find_simulator_id)"
-  fi
-
-  if [ -z "$id" ]; then
-    echo "Could not find an available iPhone simulator" >&2
-    xcrun simctl list devices available >&2
+  local hint="$2"
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "$cmd is required for ${MODE} mode"
+    echo "$hint"
     exit 1
   fi
+}
 
-  echo "platform=iOS Simulator,id=${id}"
+pick_simulator_id() {
+  python3 - <<'PY'
+import json
+import subprocess
+import sys
+
+preferred_names = [
+    "iPhone 17 Pro",
+    "iPhone 17",
+    "iPhone 16 Pro",
+    "iPhone 16",
+    "iPhone 16e",
+    "iPhone 15 Pro",
+    "iPhone 15",
+    "iPhone SE (3rd generation)",
+]
+
+output = subprocess.check_output(
+    ["xcrun", "simctl", "list", "devices", "available", "-j"],
+    text=True,
+)
+
+data = json.loads(output)
+devices = []
+
+for runtime, entries in data.get("devices", {}).items():
+    for entry in entries:
+        if not entry.get("isAvailable", False):
+            continue
+        devices.append({
+            "name": entry["name"],
+            "udid": entry["udid"],
+            "runtime": runtime
+        })
+
+def runtime_rank(runtime):
+    normalized = runtime.replace("com.apple.CoreSimulator.SimRuntime.", "")
+    parts = normalized.replace("-", ".").split(".")
+    nums = [int(p) for p in parts if p.isdigit()]
+    major = nums[0] if len(nums) > 0 else 0
+    minor = nums[1] if len(nums) > 1 else 0
+    return (major, minor)
+
+for preferred in preferred_names:
+    matches = [d for d in devices if d["name"] == preferred]
+    if matches:
+        matches.sort(key=lambda d: runtime_rank(d["runtime"]), reverse=True)
+        print(matches[0]["udid"])
+        sys.exit(0)
+
+iphone_matches = [d for d in devices if d["name"].startswith("iPhone")]
+if iphone_matches:
+    iphone_matches.sort(key=lambda d: runtime_rank(d["runtime"]), reverse=True)
+    print(iphone_matches[0]["udid"])
+    sys.exit(0)
+
+sys.exit("No simulator found")
+PY
 }
 
 run_lint() {
-  need_cmd swiftlint
-  echo "Linting Swift files in current working directory"
+  need_cmd swiftlint "brew install swiftlint"
   swiftlint lint --strict
 }
 
-run_build() {
-  local destination
-
-  need_cmd xcodegen
-
-  destination="$(resolve_destination)"
-  echo "Using destination ${destination}"
-
+run_generate() {
+  need_cmd xcodegen "brew install xcodegen"
   xcodegen generate
-  xcodebuild -resolvePackageDependencies -project "${PROJECT_NAME}.xcodeproj" -scheme "${SCHEME_NAME}"
+}
+
+run_resolve() {
+  xcodebuild -resolvePackageDependencies -project DisturbMyLive.xcodeproj -scheme DisturbMyLive
+}
+
+run_build() {
+  local simulator_id="$1"
   xcodebuild \
-    -project "${PROJECT_NAME}.xcodeproj" \
-    -scheme "${SCHEME_NAME}" \
-    -destination "${destination}" \
-    -derivedDataPath "${DERIVED_DATA_PATH}" \
-    clean build
+    -project DisturbMyLive.xcodeproj \
+    -scheme DisturbMyLive \
+    -destination "platform=iOS Simulator,id=${simulator_id}" \
+    -derivedDataPath DerivedData \
+    build
 }
 
 run_test() {
-  local destination
+  local simulator_id="$1"
+  rm -rf DerivedData
+  xcrun simctl shutdown all || true
+  xcrun simctl boot "${simulator_id}" || true
 
-  need_cmd xcodegen
-
-  destination="$(resolve_destination)"
-  echo "Using destination ${destination}"
-
-  xcodegen generate
-  xcodebuild -resolvePackageDependencies -project "${PROJECT_NAME}.xcodeproj" -scheme "${SCHEME_NAME}"
   xcodebuild \
-    -project "${PROJECT_NAME}.xcodeproj" \
-    -scheme "${SCHEME_NAME}" \
-    -destination "${destination}" \
-    -derivedDataPath "${DERIVED_DATA_PATH}" \
-    test
+    -project DisturbMyLive.xcodeproj \
+    -scheme DisturbMyLive \
+    -destination "platform=iOS Simulator,id=${simulator_id}" \
+    -derivedDataPath DerivedData \
+    clean test
 }
 
-run_verify() {
+run_verify_pr() {
+  local simulator_id
+  simulator_id="$(pick_simulator_id)"
+  echo "Using simulator ${simulator_id}"
+
   run_lint
-  run_build
-  run_test
+  run_generate
+  run_resolve
+  run_build "${simulator_id}"
+  run_test "${simulator_id}"
+}
+
+run_verify_full() {
+  local simulator_id
+  simulator_id="$(pick_simulator_id)"
+  echo "Using simulator ${simulator_id}"
+
+  run_lint
+  run_generate
+  run_resolve
+  run_test "${simulator_id}"
 }
 
 case "$MODE" in
-  lint)
-    run_lint
-    ;;
-  build)
-    run_build
-    ;;
-  test)
-    run_test
+  verify-pr)
+    run_verify_pr
     ;;
   verify)
-    run_verify
+    run_verify_full
     ;;
   *)
-    echo "Unknown mode ${MODE}"
+    echo "Usage ./scripts/verify.sh [verify-pr|verify]"
     exit 1
     ;;
 esac

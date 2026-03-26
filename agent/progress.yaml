@@ -1,22 +1,28 @@
-current_milestone: "Milestone 1"
-current_task: "Bootstrap repo operating system"
+current_milestone: "Milestone 2"
+current_task: "Stabilize live connection and disturbance flows"
 milestone_status:
-  milestone_1_bootstrap: in_progress
+  milestone_1_bootstrap: completed
+  milestone_2_live_connection_and_disturbance_flows: in_progress
 task_status:
-  milestone_1_task_1_bootstrap_repo: in_progress
+  milestone_1_task_1_bootstrap_repo: completed
+  milestone_2_task_1_stabilize_live_connection_and_disturbance_flows: in_progress
 started_at: null
 completed_at: null
 recent_work:
-  - "Repo initialized from repo-os template"
+  - "ACP base updated from repo-os"
+  - "Overlay reapplied successfully"
+  - "CI workflow refreshed"
+  - "App builds successfully on iOS Simulator"
+  - "Unit tests pass for live connection and disturbance behavior"
 next_steps:
-  - "Fill in requirements"
-  - "Fill in architecture"
-  - "Configure stack-specific files"
+  - "Continue product implementation on live connection flows"
+  - "Expand disturbance mapping and trigger behavior"
+  - "Grow test coverage alongside product changes"
 blockers: []
 documentation_counts:
   design_files: 6
   pattern_files: 2
   milestone_files: 0
   task_files: 0
-planning_progress: 0.10
-implementation_progress: 0.10
+planning_progress: 0.65
+implementation_progress: 0.55
