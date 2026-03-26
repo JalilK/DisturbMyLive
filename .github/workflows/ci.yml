@@ -1,33 +1,29 @@
-name: CI
+name: verify
 
 on:
-  push:
-    branches: [ main, feat/live-connection ]
   pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   verify:
+    name: verify
     runs-on: macos-latest
-
+    timeout-minutes: 20
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install SwiftLint
-        run: |
-          if command -v swiftlint >/dev/null 2>&1; then
-            echo "swiftlint already installed"
-          else
-            brew install swiftlint
-          fi
-
-      - name: Install XcodeGen
-        run: |
-          if command -v xcodegen >/dev/null 2>&1; then
-            echo "xcodegen already installed"
-          else
-            brew install xcodegen
-          fi
-
+      - uses: actions/checkout@v6
+      - name: Install tooling
+        run: echo "Install stack-specific tools here"
       - name: Verify
         run: ./scripts/verify.sh verify
