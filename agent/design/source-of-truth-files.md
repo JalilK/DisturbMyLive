@@ -23,6 +23,7 @@
 - agent/tasks/milestone-2-app-shell/task-1-wire-minimal-app-shell.md
 - agent/tasks/milestone-3-live-connection/task-1-replace-mock-connect-with-package-integration.md
 - agent/tasks/milestone-4-gift-catalog/task-1-build-gift-and-interaction-list-surface.md
+- agent/tasks/milestone-4-splash-screen/task-1-design-and-implement-splash-screen.md
 
 ## Workflow and command law
 

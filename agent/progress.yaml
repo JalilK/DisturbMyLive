@@ -1,15 +1,16 @@
-current_milestone: "Milestone 3"
-current_task: "Replace mock connect with package integration"
+current_milestone: "Milestone 4"
+current_task: "Design and implement splash screen"
 milestone_status:
   milestone_1_bootstrap: complete
   milestone_2_app_shell: complete
-  milestone_3_live_connection: in_progress
-  milestone_4_gift_catalog: pending
+  milestone_3_live_connection: complete
+  milestone_4_gift_catalog: in_progress
 task_status:
   milestone_1_task_1_bootstrap_repo: complete
   milestone_2_task_1_wire_minimal_app_shell: complete
-  milestone_3_task_1_replace_mock_connect_with_package_integration: in_progress
+  milestone_3_task_1_replace_mock_connect_with_package_integration: complete
   milestone_4_task_1_build_gift_and_interaction_list_surface: pending
+  milestone_4_task_2_design_and_implement_splash_screen: in_progress
 started_at: null
 completed_at: null
 recent_work:
@@ -21,6 +22,7 @@ recent_work:
   - "Mapped real package event names into LiveEventEnvelope so disturbances can react to incoming live activity"
   - "Bridged EulerLiveClient event records into the app event stream"
   - "Mapped real package event names into LiveEventEnvelope so disturbances can react to incoming live activity"
+  - "Completed full-screen live connection UI fixes, restored full-screen gradient rendering, added launch screen configuration, and stabilized on-device safe-area layout"
 next_steps:
   - "Inspect EulerLiveKit APIs from repo truth"
   - "Replace mock connection flow with package-backed service"
@@ -30,11 +32,14 @@ next_steps:
   - "Prepare PR with manual proof for real event ingestion and disturbance triggering"
   - "Manually verify real incoming events populate the feed and trigger mapped sounds"
   - "Prepare PR with manual proof for real event ingestion and disturbance triggering"
+  - "Design and implement splash screen with full-screen gradient and animated brand entry"
+  - "Design aggressive TikTok-energy splash screen with Disturb My Live title lockup, Live interaction engine subtitle, animated glow accents, and timed transition into the live connection screen"
+  - "Implement SplashScreenView and wire timer-based transition into the live connection screen"
 blockers: []
 documentation_counts:
   design_files: 6
   pattern_files: 6
   milestone_files: 4
-  task_files: 4
+  task_files: 5
 planning_progress: 0.85
 implementation_progress: 0.45
