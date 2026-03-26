@@ -23,6 +23,7 @@ recent_work:
   - "Bridged EulerLiveClient event records into the app event stream"
   - "Mapped real package event names into LiveEventEnvelope so disturbances can react to incoming live activity"
   - "Completed full-screen live connection UI fixes, restored full-screen gradient rendering, added launch screen configuration, and stabilized on-device safe-area layout"
+  - "Designed and implemented branded splash screen with animated title lockup, Live interaction engine subtitle, accent glow dots, and timed handoff into the live connection screen"
 next_steps:
   - "Inspect EulerLiveKit APIs from repo truth"
   - "Replace mock connection flow with package-backed service"
@@ -35,6 +36,7 @@ next_steps:
   - "Design and implement splash screen with full-screen gradient and animated brand entry"
   - "Design aggressive TikTok-energy splash screen with Disturb My Live title lockup, Live interaction engine subtitle, animated glow accents, and timed transition into the live connection screen"
   - "Implement SplashScreenView and wire timer-based transition into the live connection screen"
+  - "Open PR for splash screen work, validate CI, and merge after checks pass"
 blockers: []
 documentation_counts:
   design_files: 6
