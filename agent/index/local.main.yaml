@@ -118,6 +118,16 @@ indexed_files:
       - proceed
       - validate
 
+  - path: agent/tasks/milestone-4-splash-screen/task-1-design-and-implement-splash-screen.md
+    weight: 0.95
+    kind: current-task
+    description: Current task for designing and implementing the splash screen
+    rationale: Directs the next UI and transition surface
+    applies:
+      - init
+      - proceed
+      - validate
+
   - path: agent/patterns/command-first-execution.md
     weight: 0.95
     kind: execution-pattern
