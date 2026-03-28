@@ -53,3 +53,5 @@
 - agent/overlay/manifest.json
 - agent/overlay/project.yml
 - agent/overlay/App/Info.plist
+
+- agent/tasks/milestone-4-camera-catalog/task-1-build-camera-catalog-surface.md
